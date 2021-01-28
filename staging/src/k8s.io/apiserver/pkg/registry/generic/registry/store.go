@@ -422,6 +422,11 @@ func (e *Store) Create(ctx context.Context, obj runtime.Object, createValidation
 		return nil, err
 	}
 
+	createStartTime := time.Now().UTC()
+	duration := createStartTime.UnixNano() / 1000000
+	createLatency := int(duration)
+	klog.V(3).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% current time: d% Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", createLatency)
+
 	// at this point we have a fully formed object.  It is time to call the validators that the apiserver
 	// handling chain wants to enforce.
 	if createValidation != nil {

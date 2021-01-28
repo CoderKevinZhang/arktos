@@ -37,6 +37,7 @@ import (
 )
 
 const dispatcherName = "dispatcher"
+var TimeA int64 = 0
 
 type Process struct {
 	namespace           string
@@ -49,10 +50,6 @@ type Process struct {
 	tokenMap            map[string]string
 	clusterRange        dispatcherv1.DispatcherRange
 	pid                 int
-	totalCreateLatency  int64
-	totalDeleteLatency  int64
-	totalPodCreateNum   int
-	totalPodDeleteNum   int
 }
 
 func NewProcess(config *rest.Config, namespace string, name string, quit chan struct{}) Process {
@@ -89,10 +86,6 @@ func NewProcess(config *rest.Config, namespace string, name string, quit chan st
 		tokenMap:            make(map[string]string),
 		pid:                 os.Getgid(),
 		clusterRange:        dispatcher.Spec.ClusterRange,
-		totalCreateLatency:  0,
-		totalDeleteLatency:  0,
-		totalPodCreateNum:   0,
-		totalPodDeleteNum:   0,
 	}
 }
 
@@ -127,6 +120,8 @@ func (p *Process) Run(quit chan struct{}) {
 	boundPodnformer := p.initPodInformer(v1.PodBound, cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod, ok := obj.(*v1.Pod)
+			t := time.Now().UTC()
+			TimeA = t.UnixNano()
 			if !ok {
 				klog.Warningf("Failed to convert an added object  %+v to a pod", obj)
 				return
@@ -173,25 +168,19 @@ func (p *Process) SendPodToCluster() {
 			klog.Warningf("Failed to get host from the cluster %v", pod.Spec.ClusterName)
 			return
 		}
-		token, err := p.getToken(host)
 		if err != nil {
 			klog.Warningf("Failed to get token from host %v", host)
 			return
 		}
 		if pod.ObjectMeta.DeletionTimestamp != nil {
-			p.totalPodDeleteNum += 1
-			// Calculate delete latency
-			podDeleteTime := pod.DeletionTimestamp
-			currentTime := time.Now().UTC()
-			duration := (currentTime.UnixNano() - podDeleteTime.UnixNano()) / 1000000
-			p.totalDeleteLatency += duration
-			deleteLatency := int(duration)
-			klog.V(2).Infof("************************************ Pod Name: %s, Delete Latency: %d Millisecond ************************************", pod.Name, deleteLatency)
 
-			// Calculate average delete latency
-			averageDeleteLatency := int(p.totalDeleteLatency) / p.totalPodDeleteNum
-			klog.V(2).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% Total Number of Pods Deleted: %d, Average Delete Latency: %d Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", p.totalPodDeleteNum, averageDeleteLatency)
+			// Delete end time
+			deleteEndTime := time.Now().UTC()
+			deleteDuration := deleteEndTime.UnixNano() / 1000000
+			deleteLatency := int(deleteDuration)
+			klog.V(2).Infof("************************************ Pod Name: %s, End time: %d Millisecond ************************************", pod.Name, deleteLatency)
 
+			token, err := p.getToken(host)
 			err = openstack.DeleteInstance(host, token, pod.Status.ClusterInstanceId)
 			if err == nil {
 				klog.V(3).Infof("Deleting request for pod %v has been sent to %v", pod.ObjectMeta.Name, host)
@@ -199,19 +188,13 @@ func (p *Process) SendPodToCluster() {
 				klog.Warningf("Failed to delete the pod %v with error %v", pod.ObjectMeta.Name, err)
 			}
 		} else {
-			p.totalPodCreateNum += 1
-			// Calculate create latency
-			podCreateTime := pod.CreationTimestamp
-			currentTime := time.Now().UTC()
-			duration := (currentTime.UnixNano() - podCreateTime.UnixNano()) / 1000000
-			p.totalCreateLatency += duration
-			createLatency := int(duration)
+			// Create end time
+			createEndTime := time.Now().UTC()
+			createDuration := createEndTime.UnixNano() / 1000000
+			createLatency := int(createDuration)
 			klog.V(2).Infof("************************************ Pod Name: %s, Create Latency: %d Millisecond ************************************", pod.Name, createLatency)
-
-			// Calculate average create latency
-			averageCreateLatency := int(p.totalCreateLatency) / p.totalPodCreateNum
-			klog.V(2).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% Total Number of Pods Created: %d, Average Create Latency: %d Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", p.totalPodCreateNum, averageCreateLatency)
-
+			
+			token, err := p.getToken(host)
 			instanceId, err := openstack.ServerCreate(host, token, &pod.Spec)
 			if err == nil {
 				klog.V(3).Infof("Creating request for pod %v has been sent to %v", pod.ObjectMeta.Name, host)
