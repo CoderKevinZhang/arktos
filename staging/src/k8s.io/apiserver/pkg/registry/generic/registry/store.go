@@ -425,7 +425,7 @@ func (e *Store) Create(ctx context.Context, obj runtime.Object, createValidation
 	createStartTime := time.Now().UTC()
 	duration := createStartTime.UnixNano() / 1000000
 	createLatency := int(duration)
-	klog.V(3).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% current time: d% Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", createLatency)
+	klog.V(3).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% Create Start time: %d Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", createLatency)
 
 	// at this point we have a fully formed object.  It is time to call the validators that the apiserver
 	// handling chain wants to enforce.
@@ -986,6 +986,11 @@ func (e *Store) updateForGracefulDeletionAndFinalizers(ctx context.Context, name
 
 // Delete removes the item from storage.
 func (e *Store) Delete(ctx context.Context, name string, deleteValidation rest.ValidateObjectFunc, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
+	deleteStartTime := time.Now().UTC()
+	duration := deleteStartTime.UnixNano() / 1000000
+	deleteLatency := int(duration)
+	klog.V(3).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% Delete Start time: %d Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", deleteLatency)
+	
 	key, err := e.KeyFunc(ctx, name)
 	if err != nil {
 		return nil, false, err
