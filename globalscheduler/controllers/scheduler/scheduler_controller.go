@@ -315,6 +315,7 @@ func (sc *SchedulerController) addScheduler(schedulerObj interface{}) {
 			klog.V(2).Infof("The scheduler %s has been balanced\n", scheduler.GetName())
 			sc.enqueue(schedulerObj, EventTypeCreateScheduler)
 		}
+
 	} else {
 		klog.Warningf("Failed to convert the added object %v to a scheduler", schedulerObj)
 	}
@@ -327,14 +328,7 @@ func (sc *SchedulerController) deleteScheduler(schedulerObj interface{}) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
 	if scheduler, ok := schedulerObj.(*schedulercrdv1.Scheduler); ok {
-		schedulerLen := len(sc.schedulers)
-		for idx, sched := range sc.schedulers {
-			if scheduler.Name == sched.Name && scheduler.Namespace == sched.Namespace {
-				sc.schedulers[idx] = sc.schedulers[schedulerLen-1]
-				sc.schedulers = sc.schedulers[:schedulerLen-1]
-				break
-			}
-		}
+		sc.schedulers = append(sc.schedulers, scheduler)
 		if err := sc.balance(scheduler.ObjectMeta.GetNamespace(), []*ClusterInfoNode{sc.countryNode}); err != nil {
 			klog.Warningf("Failed to balance schedulers with error %v", err)
 		}
@@ -476,6 +470,7 @@ func (sc *SchedulerController) balance(namespace string, nodes []*ClusterInfoNod
 			combinedStorage = append(combinedStorage, key.DeepCopy())
 		}
 		latestScheduler.Spec.Union.Storage = combinedStorage
+
 		latestScheduler.Spec.Union.EipCapacity = getMapKeys(unionEipCapacity)
 		latestScheduler.Spec.Union.CPUCapacity = getMapKeys(unionCPUCapacity)
 		latestScheduler.Spec.Union.MemCapacity = getMapKeys(unionMemCapacity)
