@@ -1,0 +1,13 @@
+apiVersion: globalscheduler.com/v1
+kind: Scheduler
+metadata:
+  name: scheduler1
+spec:
+  tag: "1"
+---
+apiVersion: globalscheduler.com/v1
+kind: Scheduler
+metadata:
+  name: scheduler2
+spec:
+  tag: "2"
