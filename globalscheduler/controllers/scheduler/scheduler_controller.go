@@ -243,7 +243,7 @@ func (sc *SchedulerController) syncHandler(key *KeyWithEventType) error {
 		//}
 
 		// Start Scheduler Process
-		command := "./hack/globalscheduler/start_scheduler.sh " + schedulerCopy.Spec.Tag + " " + schedulerCopy.Name
+		command := "./hack/globalscheduler/start_scheduler.sh " + schedulerCopy.Spec.Tag + " " + schedulerCopy.Name + IP + Port
 		err = runCommand(command)
 		if err != nil {
 			return fmt.Errorf("start scheduler process failed")

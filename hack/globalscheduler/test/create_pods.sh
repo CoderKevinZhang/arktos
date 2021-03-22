@@ -13,11 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-locs=("NewYork NewYork NE-1 US" "Bellevue Washington NW-1 US" "Orlando Florida SE-1 US" "Austin Texas SW-1 US" "Chicago Illinois Central-1 US" "Boston Massachusettes NE-2 US" "SanFrancisco California NW-2 US" "Atlanta Georgia SE-2 US" "LasVegas Nevada SW-2 US" "Omaha Nebraska Central-2 US")
+# locs=("NewYork NewYork NE-1 US" "Bellevue Washington NW-1 US" "Orlando Florida SE-1 US" "Austin Texas SW-1 US" "Chicago Illinois Central-1 US" "Boston Massachusettes NE-2 US" "SanFrancisco California NW-2 US" "Atlanta Georgia SE-2 US" "LasVegas Nevada SW-2 US" "Omaha Nebraska Central-2 US")
+
+FILE="/home/ubuntu/go/src/k8s.io/arktos/globalscheduler/test/yaml/sample_1000_pods.yaml"
 
 function create_pod {
 # Create multiple YAML objects from stdin
-cat <<EOF | cluster/kubectl.sh apply -f -
+cat <<EOM >> $FILE
 apiVersion: v1
 kind: Pod
 metadata:
@@ -26,54 +28,41 @@ spec:
   resourceType: "vm"
   virtualMachine:
     name: vm$1
-    image: "9ecb51b6-f723-4654-bfcd-37459245c9dc"
+    image: "51dc9183-f01b-4ecf-8c55-cd8aecb17db3"
     keyPairName: "demo-keypair"
-    securityGroupId: "ca3a65fb-f304-438d-97bd-171d713f5aa5"
+    securityGroupId: "c46e6ee2-8112-4d4e-9e60-fe4c813f7339"
     flavors:
       - flavorID: "42"
     resourceCommonInfo:
      count: 1
      selector:
        geoLocation:
-         city: "$2"
-         province: "$3"
-         area: "$4"
-         country: "$5"
+         city: $3
+         province: $4
+         area: $2
+         country: $5
        regions:
-         - region: "$4"
+         - region: $2
            availablityZone:
-           - "$4"
-
+           - "az1"
   nics:
-    - name: "211d3389-1c1a-4938-8686-c61ff81b7ff7"
-EOF
+    - name: "8cbc8370-0b22-4927-9b50-f16b5dc57d52"
+---
+EOM
 }
 
-locsLen=${#locs[@]}
-
-starts=$(date +%s%N)
-sleepseconds=$2
-sleepms=$(echo "$sleepseconds*1000000000/1" | bc)
-
+# locsLen=${#locs[@]}
+idx=0
 for ((i = 0 ; i < $(($1)) ; i++)); do
-    locsIdx=$(($i%locsLen))
-    name="pod-$(($i))"
-    create_pod $name ${locs[$locsIdx]} &
-    #sleep take more time than expected.
-    tw=$((${tw} + ${sleepms}))
-    #Pods are created in 10 units to save time
-    if [ $(($i%10)) -eq 9 ] 
-    then 
-         while [ $(($(date +%s%N) - ${starts})) -lt ${tw} ]
-         do
-              sleep 0.0001
-         done
+    if [ $idx -eq 1000 ]
+    then
+      idx=0
     fi
+    name="pod-$(($i))"
+    area="area-$(($idx))"
+    city="city-$(($idx))"
+    province="province-$(($idx))"
+    country="US"
+    create_pod $name $area $city $province $country
+    idx=$((idx+1))
 done
-#Wait the time left
-while [ $(($(date +%s%N) - ${starts})) -lt ${tw} ]
-do
-    sleep 0.0001
-done
-
-echo "The shell script took $(echo "scale=3;($(date +%s%N) - ${starts})/(1*10^06)" | bc) milliseconds to run"

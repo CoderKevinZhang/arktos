@@ -337,6 +337,7 @@ EOF
       --admission-control-config-file="${ADMISSION_CONTROL_CONFIG_FILE}" \
       --bind-address="${API_BIND_ADDR}" \
       --secure-port=$secureport \
+      --max-requests-inflight=1000 \
       --tls-cert-file="${CERT_DIR}/serving-kube-apiserver.crt" \
       --tls-private-key-file="${CERT_DIR}/serving-kube-apiserver.key" \
       --insecure-bind-address="${API_HOST_IP}" \
