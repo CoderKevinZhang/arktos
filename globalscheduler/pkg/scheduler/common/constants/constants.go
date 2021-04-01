@@ -94,4 +94,10 @@ const (
 
 	//ResourceCollector snapshot url
 	ResourceCollecotrSnapshotURL = "/v1/snapshot"
+
+	//Post scheduler ipaddress url
+	SchedulerRegisterURL = "/v1/scheduler"
+
+	//Push resource update notification url
+	RegionResourcesURL = "/regionresources"
 )

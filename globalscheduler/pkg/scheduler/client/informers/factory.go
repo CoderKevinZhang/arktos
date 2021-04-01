@@ -18,7 +18,6 @@ limitations under the License.
 package informers
 
 import (
-	"k8s.io/kubernetes/globalscheduler/pkg/scheduler/client/informers/siteinfos"
 	"sync"
 	"time"
 
@@ -164,7 +163,7 @@ func (f *sharedInformerFactory) InformerFor(name string, key string, newFunc int
 //GetFlavor get flavor
 func (f *sharedInformerFactory) GetFlavor(flavorID string, region string) (typed.Flavor, bool) {
 	if region != "" {
-		flvInter, exist := f.GetInformer(FLAVOR).GetStore().Get(region + "|" + flavorID)
+		flvInter, exist := f.GetInformer(FLAVOR).GetStore().Get(region + "--" + flavorID)
 		var ret = typed.Flavor{}
 		if exist {
 			ret = flvInter.(typed.RegionFlavor).Flavor
@@ -198,11 +197,6 @@ func (f *sharedInformerFactory) SiteResource(name, key string, period time.Durat
 func (f *sharedInformerFactory) VolumeType(name, key string, period time.Duration,
 	collector internalinterfaces.ResourceCollector) volumetype.InformerVolumeType {
 	return volumetype.New(f, name, key, period, collector)
-}
-
-//Sites new site informer
-func (f *sharedInformerFactory) SiteInfo(name, key string, period time.Duration) siteinfos.InformerSiteInfo {
-	return siteinfos.New(f, name, key, period)
 }
 
 //EipPools new eip pool informer
