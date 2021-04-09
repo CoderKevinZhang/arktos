@@ -203,7 +203,7 @@ func (p *Process) SendPodToCluster(pod *v1.Pod) {
 				util.CheckTime(pod.Name, "dispatcher", "DeletePod-End", 2)
 			}()
 		} else {
-			util.CheckTime(pod.Name, "dispatcher", "CreatePod-End", 2)
+			// util.CheckTime(pod.Name, "dispatcher", "CreatePod-End", 2)
 			p.totalPodCreateNum += 1
 			// Calculate create latency
 			podCreateTime := pod.CreationTimestamp
@@ -217,37 +217,28 @@ func (p *Process) SendPodToCluster(pod *v1.Pod) {
 			averageCreateLatency := int(p.totalCreateLatency) / p.totalPodCreateNum
 			klog.V(2).Infof("%%%%%%%%%%%%%%%%%%%%%%%%%% Total Number of Pods Created: %d, Average Create Latency: %d Millisecond %%%%%%%%%%%%%%%%%%%%%%%%%%", p.totalPodCreateNum, averageCreateLatency)
 			
-			pod.Status.Phase = v1.ClusterScheduled
-			updatedPod, err := p.clientset.CoreV1().Pods(pod.ObjectMeta.Namespace).UpdateStatus(pod)
-			if err == nil {
-				klog.V(3).Infof("The pod %v has been updated its apiserver database status to scheduled successfully", updatedPod)
+			go func() {
+				instanceId, err := openstack.ServerCreate(host, token, &pod.Spec)
+				if err == nil {
+					klog.V(3).Infof("The openstack vm for the pod %v has been created at the host %v", pod.ObjectMeta.Name, host)
+					pod.Status.ClusterInstanceId = instanceId
+					pod.Status.Phase = v1.ClusterScheduled
+					updatedPod, err := p.clientset.CoreV1().Pods(pod.ObjectMeta.Namespace).UpdateStatus(pod)
+					if err == nil {
+						klog.V(3).Infof("The pod %v has been updated its apiserver database status to scheduled successfully with the instance id %v", updatedPod, instanceId)
 
-			} else {
-				klog.Warningf("The pod %v failed to update its apiserver database status to scheduled with the error %v", pod.ObjectMeta.Name, err)
-			}
-			
-			// go func() {
-			// 	instanceId, err := openstack.ServerCreate(host, token, &pod.Spec)
-			// 	if err == nil {
-			// 		klog.V(3).Infof("The openstack vm for the pod %v has been created at the host %v", pod.ObjectMeta.Name, host)
-			// 		pod.Status.ClusterInstanceId = instanceId
-			// 		pod.Status.Phase = v1.ClusterScheduled
-			// 		updatedPod, err := p.clientset.CoreV1().Pods(pod.ObjectMeta.Namespace).UpdateStatus(pod)
-			// 		if err == nil {
-			// 			klog.V(3).Infof("The pod %v has been updated its apiserver database status to scheduled successfully with the instance id %v", updatedPod, instanceId)
-
-			// 		} else {
-			// 			klog.Warningf("The pod %v failed to update its apiserver database status to scheduled with the error %v", pod.ObjectMeta.Name, err)
-			// 		}
-			// 	} else {
-			// 		klog.Warningf("The openstack vm for the  pod %v failed to create with the error %v", pod.ObjectMeta.Name, err)
-			// 		pod.Status.Phase = v1.PodFailed
-			// 		if _, err := p.clientset.CoreV1().Pods(pod.ObjectMeta.Namespace).UpdateStatus(pod); err != nil {
-			// 			klog.Warningf("The pod %v failed to update its apiserver dtatbase status to failed with the error %v", pod.ObjectMeta.Name, err)
-			// 		}
-			// 	}
-			// 	// util.CheckTime(pod.Name, "dispatcher", "CreatePod-End", 2)
-			// }()
+					} else {
+						klog.Warningf("The pod %v failed to update its apiserver database status to scheduled with the error %v", pod.ObjectMeta.Name, err)
+					}
+				} else {
+					klog.Warningf("The openstack vm for the  pod %v failed to create with the error %v", pod.ObjectMeta.Name, err)
+					pod.Status.Phase = v1.PodFailed
+					if _, err := p.clientset.CoreV1().Pods(pod.ObjectMeta.Namespace).UpdateStatus(pod); err != nil {
+						klog.Warningf("The pod %v failed to update its apiserver dtatbase status to failed with the error %v", pod.ObjectMeta.Name, err)
+					}
+				}
+				util.CheckTime(pod.Name, "dispatcher", "CreatePod-End", 2)
+			}()
 		}
 	}
 }

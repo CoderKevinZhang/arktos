@@ -1,0 +1,247 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-0
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-0
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+       regions:
+         - region: area-0
+           availablityZone:
+           - "non-production-az"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-1
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-1
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+       regions:
+         - region: area-0
+           availablityZone:
+           - "production-az"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-2
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-2
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+       regions:
+         - region: area-0
+           availablityZone:
+           - "non-production-az"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-3
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-3
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+       regions:
+         - region: area-0
+           availablityZone:
+           - "production-az"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-4
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-4
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+       regions:
+         - region: area-0
+           availablityZone:
+           - "non-production-az"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-5
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-5
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+       regions:
+         - region: area-0
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-6
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-6
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       regions:
+         - region: area-0
+           availablityZone:
+           - "non-production-az"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-7
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-7
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+     selector:
+       geoLocation:
+         city: city-0
+         province: province-0
+         area: area-0
+         country: US
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-8
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-8
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+    resourceCommonInfo:
+     count: 1
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-9
+spec:
+  resourceType: "vm"
+  virtualMachine:
+    name: vmpod-9
+    image: "0df07567-87a8-4d01-b7d9-c70f91c86427"
+    keyPairName: "demo-keypair"
+    securityGroupId: "58b9fbbf-6f04-49ca-8c7e-ac797c6d236c"
+    flavors:
+      - flavorID: "42"
+  nics:
+    - name: "9e29aa2d-6943-4109-bc5c-1a882b086122"
+---
