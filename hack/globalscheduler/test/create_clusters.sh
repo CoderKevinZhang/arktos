@@ -13,9 +13,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-openstackips=("18.236.217.191" "54.185.103.249" "54.149.22.83" "18.237.167.235" "34.220.133.183" "54.212.231.62" "18.236.245.207" "34.211.110.194" "54.189.196.126" "35.165.106.249" "34.210.104.15" "34.220.41.107" "52.34.63.99" "54.184.175.142" "34.221.41.172" "54.189.234.9" "18.237.126.53" "18.236.244.165" "35.166.177.124" "18.236.217.216")
+openstackips=("18.236.217.191" "54.185.103.249" "54.149.22.83" "52.26.26.105" "34.211.48.7" "18.237.124.220" "54.212.154.172" "18.237.219.7" "18.237.46.35" "34.220.251.88" "54.245.170.95" "54.71.199.72" "34.221.213.159" "34.223.250.13" "18.237.28.193" "54.149.16.92" "54.244.101.83" "54.190.38.95" "34.222.79.78" "52.34.232.53")
 azs=("non-production-az" "production-az")
-FILE="/home/ubuntu/go/src/k8s.io/arktos/globalscheduler/test/yaml/sample_5000_clusters_new.yaml"
+FILE="/home/ubuntu/go/src/k8s.io/arktos/globalscheduler/test/yaml/sample_1000_clusters_new.yaml"
 
 function create_cluster {
 # Create multiple YAML objects from stdin
@@ -59,10 +59,6 @@ for ((i = 0 ; i < $(($1)) ; i++)); do
     if [ $ipsIdx -eq 0 ]
     then
       azsIdx=$((azsIdx+1))
-      if [ $azsIdx -eq 51 ]
-      then
-        azsIdx=1
-      fi
     fi
     name="cluster-$(($i))"
     area="area-$(($ipsIdx))"
